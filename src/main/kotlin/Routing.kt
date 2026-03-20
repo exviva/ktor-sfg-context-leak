@@ -11,7 +11,8 @@ import java.lang.Thread.sleep
 fun Application.configureRouting() {
     routing {
         get("/") {
-            if (call.queryParameters["i"] == "4") {
+            val switchContexts = call.queryParameters["i"] == "4"
+            if (switchContexts) {
                 withContext(Dispatchers.IO) {
                     sleep(10)
                 }
@@ -32,7 +33,11 @@ fun Application.configureRouting() {
                     ?.traceId
                     ?: "NULL"
 
-            call.respondText("thread_name=${Thread.currentThread().name} trace_id=$callTraceId")
+            call.respondText(
+                "thread_name=${Thread.currentThread().name}" +
+                        " trace_id=$callTraceId" +
+                        " switchContexts=$switchContexts"
+            )
         }
     }
 }
