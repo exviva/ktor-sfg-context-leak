@@ -1,5 +1,3 @@
-package com.example
-
 import io.ktor.server.application.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
@@ -13,7 +11,12 @@ import java.lang.Thread.sleep
 fun Application.configureRouting() {
     routing {
         get("/") {
-            call.application.log.info("hello from route")
+            if (call.queryParameters["i"] == "4") {
+                withContext(Dispatchers.IO) {
+                    sleep(10)
+                }
+            }
+
             val callTraceId =
                 call
                     .attributes
@@ -29,11 +32,7 @@ fun Application.configureRouting() {
                     ?.traceId
                     ?: "NULL"
 
-            call.application.log.info("route: otel context in call attributes: $callTraceId")
-            call.respondText("Hello World!")
-            withContext(Dispatchers.IO) {
-                sleep(10)
-            }
+            call.respondText("thread_name=${Thread.currentThread().name} trace_id=$callTraceId")
         }
     }
 }

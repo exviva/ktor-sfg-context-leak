@@ -1,5 +1,3 @@
-package com.example
-
 import io.ktor.server.application.*
 import io.opentelemetry.api.trace.propagation.W3CTraceContextPropagator
 import io.opentelemetry.context.propagation.ContextPropagators
