@@ -7,7 +7,7 @@ group = "com.example"
 version = "0.0.1"
 
 application {
-    mainClass = "io.ktor.server.netty.EngineMain"
+    mainClass = "ApplicationKt"
 }
 
 kotlin {
