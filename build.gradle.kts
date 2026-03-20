@@ -8,6 +8,11 @@ version = "0.0.1"
 
 application {
     mainClass = "ApplicationKt"
+    applicationDefaultJvmArgs =
+        if (providers.gradleProperty("disableSfg").isPresent)
+            listOf("-Dio.ktor.internal.disable.sfg=true")
+        else
+            emptyList()
 }
 
 kotlin {
