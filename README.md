@@ -11,7 +11,6 @@ I was able to reproduce this using the following versions:
 
 ```toml
 kotlin = "2.3.20"
-kotlinx-coroutines = "1.10.2"
 ktor = "3.4.1"
 opentelemetry = "1.60.1"
 opentelemetry-instrumentation = "2.24.0-alpha"
