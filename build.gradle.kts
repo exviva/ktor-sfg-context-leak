@@ -27,4 +27,7 @@ dependencies {
     implementation(libs.opentelemetry.instrumentation.logback)
     implementation(libs.opentelemetry.sdk)
     implementation(libs.opentelemetry.sdk.logs)
+
+    testImplementation(libs.ktor.server.testing)
+    testImplementation(kotlin("test"))
 }

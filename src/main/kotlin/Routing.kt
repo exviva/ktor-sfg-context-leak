@@ -6,16 +6,13 @@ import io.opentelemetry.api.trace.Span
 import io.opentelemetry.context.Context
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import java.lang.Thread.sleep
 
 fun Application.configureRouting() {
     routing {
         get("/") {
             val switchContexts = call.queryParameters["i"] == "4"
             if (switchContexts) {
-                withContext(Dispatchers.IO) {
-                    sleep(10)
-                }
+                withContext(Dispatchers.IO) {}
             }
 
             val callTraceId =
@@ -31,12 +28,12 @@ fun Application.configureRouting() {
                     ?.let(Span::fromContext)
                     ?.spanContext
                     ?.traceId
-                    ?: "NULL"
+                    ?: "?".repeat(32)
 
             call.respondText(
-                "thread_name=${Thread.currentThread().name}" +
-                        " trace_id=$callTraceId" +
-                        " switchContexts=$switchContexts"
+                "trace_id=$callTraceId" +
+                    " thread_name=${Thread.currentThread().name}" +
+                    " switchContexts=$switchContexts"
             )
         }
     }
