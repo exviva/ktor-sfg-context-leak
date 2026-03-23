@@ -13,7 +13,7 @@ I was able to reproduce this using the following versions:
 kotlin = "2.3.20"
 ktor = "3.4.1"
 opentelemetry = "1.60.1"
-opentelemetry-instrumentation = "2.24.0-alpha"
+opentelemetry-instrumentation = "2.26.0-alpha"
 ```
 
 To demonstrate the issue, execute `./gradlew -i test`. One of the e2e tests is failing, e.g.:
