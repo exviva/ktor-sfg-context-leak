@@ -4,7 +4,7 @@ import io.ktor.server.testing.*
 import kotlin.test.Test
 import kotlin.test.assertTrue
 
-val traceIdRegex = """trace_id=\w{32} """.toRegex()
+val traceIdRegex = """call_trace_id=\w{32} """.toRegex()
 
 class RoutingTest {
 

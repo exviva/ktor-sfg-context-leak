@@ -23,6 +23,7 @@ dependencies {
     implementation(libs.ktor.server.config.yaml)
     implementation(libs.ktor.server.core)
     implementation(libs.ktor.server.netty)
+    implementation(libs.opentelemetry.extension.kotlin)
     implementation(libs.opentelemetry.instrumentation.ktor)
     implementation(libs.opentelemetry.sdk)
 
