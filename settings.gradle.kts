@@ -1,4 +1,4 @@
-rootProject.name = "ktor-server-sfg-otel-mdc-bug"
+rootProject.name = "ktor-sfg-context-leak"
 
 dependencyResolutionManagement {
     repositories {

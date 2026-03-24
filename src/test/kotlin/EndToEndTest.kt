@@ -1,4 +1,5 @@
 import io.ktor.client.*
+import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import kotlinx.coroutines.delay
@@ -8,14 +9,18 @@ import java.lang.Thread.sleep
 import java.net.ConnectException
 import kotlin.test.AfterTest
 import kotlin.test.Test
-import kotlin.test.assertTrue
+import kotlin.test.assertContains
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 
 class EndToEndTest {
     private lateinit var serverProcess: Process
-    val httpClient = HttpClient()
-    val url = "http://localhost:8080/"
+    val httpClient = HttpClient {
+        defaultRequest {
+            host = "localhost"
+            port = 8080
+        }
+    }
 
     @AfterTest
     fun stopServer() {
@@ -28,26 +33,24 @@ class EndToEndTest {
     }
 
     @Test
-    fun `trace ID preserved when request handled by thread which switched contexts in the past`() {
+    fun `thread-local doesn't leak with SuspendFunctionGun enabled`() {
         startServer()
         loopRequests()
     }
 
     @Test
-    fun `trace ID preserved with SuspendFunctionGun disabled`() {
+    fun `thread-local doesn't leak with SuspendFunctionGun disabled`() {
         startServer("-PdisableSfg")
         loopRequests()
     }
 
     private fun loopRequests() = runBlocking {
-        List(12) { i -> httpClient.get(url) { parameter("i", i) } }
-            .map { it.bodyAsText() }
-            .onEach(::println)
-            .forEachIndexed { i, responseBody ->
-                assertTrue(
-                    traceIdRegex.containsMatchIn(responseBody),
-                    "Invalid trace ID in response #$i: $responseBody"
-                )
+        List(12) { "/thread_local/$it" }
+            .associateWith { httpClient.get(it) }
+            .mapValues { it.value.bodyAsText() }
+            .onEach { println(it.value) }
+            .forEach { (path, responseBody) ->
+                assertContains(responseBody, "serving $path")
             }
     }
 
@@ -83,7 +86,7 @@ class EndToEndTest {
     }
 
     private suspend fun isServerReady() = try {
-        httpClient.options(url)
+        httpClient.options("/")
         true
     } catch (_: ConnectException) {
         false

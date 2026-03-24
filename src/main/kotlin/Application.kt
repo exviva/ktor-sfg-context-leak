@@ -1,4 +1,5 @@
 import io.ktor.server.application.Application
+import io.ktor.server.application.install
 import io.ktor.server.netty.EngineMain
 
 fun main(args: Array<String>) {
@@ -7,6 +8,11 @@ fun main(args: Array<String>) {
 
 @Suppress("unused")
 fun Application.module() {
-    configureMonitoring()
-    configureRouting()
+    val tl = ThreadLocal<String>()
+
+    install(ThreadLocalPlugin) {
+        this.threadLocal = tl
+    }
+
+    configureRouting(tl)
 }
