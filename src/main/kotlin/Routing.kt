@@ -4,7 +4,7 @@ import io.ktor.server.routing.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-fun Application.configureRouting(threadLocal: ThreadLocal<String>) {
+fun Application.configureRouting(threadLocal: ThreadLocal<String?>) {
     routing {
         get("/thread_local/{i}") {
             val i = call.pathParameters["i"]

@@ -11,24 +11,24 @@ val ThreadLocalPlugin = createApplicationPlugin("ThreadLocalPlugin", ::ThreadLoc
     application.insertPhaseBefore(ApplicationCallPipeline.Setup, startPhase)
     application.intercept(startPhase) {
         val path = call.request.path()
-        val tlValue = threadLocal.get()
-        val message = "${Thread.currentThread().name} serving $path"
 
-        print("[$message] ")
-        if (tlValue == null) {
-            println("all healthy, thread local is null outside withContext")
+        threadLocal
+            .get()
+            ?.let { tlValue ->
+                application.log.warn("[{}] thread local LEAKED: '{}'", path, tlValue)
 
-            withContext(threadLocal.asContextElement(message)) {
                 proceed()
             }
-        } else {
-            println("thread local LEAKED: '$tlValue'")
+            ?: run {
+                application.log.info("[{}] thread local is null", path)
 
-            proceed()
-        }
+                withContext(threadLocal.asContextElement("Created in $path")) {
+                    proceed()
+                }
+            }
     }
 }
 
-class ThreadLocalPluginConfig<T> {
-    lateinit var threadLocal: ThreadLocal<T>
+class ThreadLocalPluginConfig {
+    lateinit var threadLocal: ThreadLocal<String?>
 }

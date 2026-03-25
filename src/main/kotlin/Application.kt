@@ -8,7 +8,7 @@ fun main(args: Array<String>) {
 
 @Suppress("unused")
 fun Application.module() {
-    val tl = ThreadLocal<String>()
+    val tl = ThreadLocal<String?>()
 
     install(ThreadLocalPlugin) {
         threadLocal = tl

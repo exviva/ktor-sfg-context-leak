@@ -5,6 +5,7 @@ import io.ktor.client.statement.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
+import org.slf4j.LoggerFactory
 import java.lang.Thread.sleep
 import java.net.ConnectException
 import kotlin.test.AfterTest
@@ -13,21 +14,23 @@ import kotlin.test.assertContains
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 
+private val logger = LoggerFactory.getLogger(EndToEndTest::class.java)
+private val httpClient = HttpClient {
+    defaultRequest {
+        host = "localhost"
+        port = 8080
+    }
+}
+
 class EndToEndTest {
     private lateinit var serverProcess: Process
-    val httpClient = HttpClient {
-        defaultRequest {
-            host = "localhost"
-            port = 8080
-        }
-    }
 
     @AfterTest
     fun stopServer() {
         serverProcess.destroy()
 
         while (serverProcess.isAlive) {
-            println("Waiting for server PID=${serverProcess.pid()} to terminate...")
+            logger.info("Waiting for server PID={} to terminate...", serverProcess.pid())
             sleep(1000)
         }
     }
@@ -48,9 +51,9 @@ class EndToEndTest {
         List(12) { "/thread_local/$it" }
             .associateWith { httpClient.get(it) }
             .mapValues { it.value.bodyAsText() }
-            .onEach { println(it.value) }
+            .onEach { logger.info(it.value) }
             .forEach { (path, responseBody) ->
-                assertContains(responseBody, "serving $path")
+                assertContains(responseBody, "thread_local='Created in $path'")
             }
     }
 
@@ -62,10 +65,10 @@ class EndToEndTest {
         withTimeout(15.seconds) {
             while (true) {
                 if (isServerReady()) {
-                    println("Connected to server after $attempt attempts")
+                    logger.info("Connected to server after {} attempts", attempt)
                     break
                 } else {
-                    println("Attempt #$attempt: server not ready, connection refused")
+                    logger.warn("Attempt #{}: server not ready, connection refused", attempt)
                     attempt++
                     delay(500.milliseconds)
                 }
