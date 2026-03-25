@@ -11,7 +11,7 @@ fun Application.module() {
     val tl = ThreadLocal<String>()
 
     install(ThreadLocalPlugin) {
-        this.threadLocal = tl
+        threadLocal = tl
     }
 
     configureRouting(tl)

@@ -1,11 +1,9 @@
 import io.ktor.server.application.*
-import io.ktor.server.request.path
+import io.ktor.server.request.*
 import io.ktor.util.pipeline.*
 import kotlinx.coroutines.asContextElement
 import kotlinx.coroutines.withContext
-import kotlin.uuid.ExperimentalUuidApi
 
-@OptIn(ExperimentalUuidApi::class)
 val ThreadLocalPlugin = createApplicationPlugin("ThreadLocalPlugin", ::ThreadLocalPluginConfig) {
     val startPhase = PipelinePhase("ThreadLocal")
     val threadLocal = pluginConfig.threadLocal
