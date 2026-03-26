@@ -68,6 +68,7 @@ Here are the plugin's server logs when running `./gradlew run` and `for i in {0.
 [eventLoopGroupProxy-4-3] INFO Application - [/thread_local/2] thread local is null
 [eventLoopGroupProxy-4-1] INFO Application - [/thread_local/3] thread local is null
 [eventLoopGroupProxy-4-2] INFO Application - [/thread_local/4] thread local is null
+[eventLoopGroupProxy-4-2] WARN Application - [/thread_local/4] thread local NOT NULL after withContext: 'Created in /thread_local/4'
 [eventLoopGroupProxy-4-3] INFO Application - [/thread_local/5] thread local is null
 [eventLoopGroupProxy-4-1] INFO Application - [/thread_local/6] thread local is null
 [eventLoopGroupProxy-4-2] WARN Application - [/thread_local/7] thread local LEAKED: 'Created in /thread_local/4'

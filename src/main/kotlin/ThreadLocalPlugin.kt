@@ -14,7 +14,7 @@ val ThreadLocalPlugin = createApplicationPlugin("ThreadLocalPlugin", ::ThreadLoc
 
         threadLocal
             .get()
-            ?.let { tlValue ->
+            ?.also { tlValue ->
                 application.log.warn("[{}] thread local LEAKED: '{}'", path, tlValue)
 
                 proceed()
@@ -25,6 +25,16 @@ val ThreadLocalPlugin = createApplicationPlugin("ThreadLocalPlugin", ::ThreadLoc
                 withContext(threadLocal.asContextElement("Created in $path")) {
                     proceed()
                 }
+
+                threadLocal
+                    .get()
+                    ?.also { tlValue ->
+                        application.log.warn(
+                            "[{}] thread local NOT NULL after withContext: '{}'",
+                            path,
+                            tlValue
+                        )
+                    }
             }
     }
 }
