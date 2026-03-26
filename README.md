@@ -76,6 +76,37 @@ Here are the plugin's server logs when running `./gradlew run` and `for i in {0.
 [eventLoopGroupProxy-4-1] INFO Application - [/thread_local/9] thread local is null
 ```
 
+Here are logs from the `VerboseThreadLocalElement` around request #4:
+
+```
+# Request #3
+[eventLoopGroupProxy-4-1] INFO Application - [/thread_local/3] thread local is null
+[eventLoopGroupProxy-4-1] INFO VerboseThreadLocalElement - updateThreadContext null => Created in /thread_local/3
+[eventLoopGroupProxy-4-1] INFO VerboseThreadLocalElement - restoreThreadContext Created in /thread_local/3 => null
+
+# Request #4
+[eventLoopGroupProxy-4-2] INFO Application - [/thread_local/4] thread local is null
+[eventLoopGroupProxy-4-2] INFO VerboseThreadLocalElement - updateThreadContext null => Created in /thread_local/4
+[eventLoopGroupProxy-4-2] INFO VerboseThreadLocalElement - restoreThreadContext Created in /thread_local/4 => null
+[DefaultDispatcher-worker-1] INFO VerboseThreadLocalElement - updateThreadContext null => Created in /thread_local/4
+[DefaultDispatcher-worker-1] INFO VerboseThreadLocalElement - restoreThreadContext Created in /thread_local/4 => null
+
+# Two subsequent calls to `updateThreadContext` without a matching `restoreThreadContext`
+[eventLoopGroupProxy-4-2] INFO VerboseThreadLocalElement - updateThreadContext null => Created in /thread_local/4
+[eventLoopGroupProxy-4-2] INFO VerboseThreadLocalElement - updateThreadContext Created in /thread_local/4 => Created in /thread_local/4
+[eventLoopGroupProxy-4-2] INFO VerboseThreadLocalElement - restoreThreadContext Created in /thread_local/4 => Created in /thread_local/4
+[eventLoopGroupProxy-4-2] INFO VerboseThreadLocalElement - updateThreadContext Created in /thread_local/4 => Created in /thread_local/4
+[eventLoopGroupProxy-4-2] INFO VerboseThreadLocalElement - restoreThreadContext Created in /thread_local/4 => Created in /thread_local/4
+[eventLoopGroupProxy-4-2] INFO VerboseThreadLocalElement - updateThreadContext Created in /thread_local/4 => Created in /thread_local/4
+[eventLoopGroupProxy-4-2] INFO VerboseThreadLocalElement - restoreThreadContext Created in /thread_local/4 => Created in /thread_local/4
+[eventLoopGroupProxy-4-2] WARN Application - [/thread_local/4] thread local NOT NULL after withContext: 'Created in /thread_local/4'
+
+# Request #5
+[eventLoopGroupProxy-4-3] INFO Application - [/thread_local/5] thread local is null
+[eventLoopGroupProxy-4-3] INFO VerboseThreadLocalElement - updateThreadContext null => Created in /thread_local/5
+[eventLoopGroupProxy-4-3] INFO VerboseThreadLocalElement - restoreThreadContext Created in /thread_local/5 => null
+```
+
 ### What could be going on?
 
 The `SuspendFunctionGun` pipeline executor doesn't properly unmount thread-local context elements when the executed coroutine switches contexts.
